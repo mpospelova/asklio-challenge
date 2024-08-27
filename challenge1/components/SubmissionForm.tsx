@@ -5,6 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useMutation } from "@tanstack/react-query";
 import {
   Form,
   FormControl,
@@ -19,11 +20,11 @@ import { useForm } from "react-hook-form";
 
 const generalInformationSchema = z.object({
   requestorName: z.string().min(1).max(50),
-  title: z.string().min(1).max(200),
-  vendorName: z.string().min(1).max(50),
-  vatID: z.string().min(1).max(50),
-  commodityGroup: z.string().min(1).max(50),
-  department: z.string().min(1).max(50),
+  // title: z.string().min(1).max(200),
+  // vendorName: z.string().min(1).max(50),
+  // vatID: z.string().min(1).max(50),
+  // commodityGroup: z.string().min(1).max(50),
+  // department: z.string().min(1).max(50),
 });
 
 function SubmissionForm() {
@@ -31,17 +32,36 @@ function SubmissionForm() {
     resolver: zodResolver(generalInformationSchema),
     defaultValues: {
       requestorName: "",
-      title: "",
-      vendorName: "",
-      vatID: "",
-      commodityGroup: "",
-      department: "",
+      // title: "",
+      // vendorName: "",
+      // vatID: "",
+      // commodityGroup: "",
+      // department: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof generalInformationSchema>) {
     console.log(values);
+    submitForm(values);
   }
+
+  const { mutate: submitForm, isPending } = useMutation({
+    mutationFn: async (message: any) => {
+      const response = await fetch("/api/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      return response.body;
+    },
+  });
 
   return (
     <div>
@@ -61,7 +81,7 @@ function SubmissionForm() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
@@ -120,7 +140,7 @@ function SubmissionForm() {
                 </FormControl>
               </FormItem>
             )}
-          />
+          /> */}
           <Button type="submit">Submit</Button>
         </form>
       </Form>
