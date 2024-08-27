@@ -1,67 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useMutation } from "@tanstack/react-query";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-
-const generalInformationSchema = z.object({
-  requestorName: z.string().min(1).max(50),
-  // title: z.string().min(1).max(200),
-  // vendorName: z.string().min(1).max(50),
-  // vatID: z.string().min(1).max(50),
-  // commodityGroup: z.string().min(1).max(50),
-  // department: z.string().min(1).max(50),
-});
+import { ExtractedInformationSchema } from "@/lib/validators/ExtractedInformation";
+import { ExtractedInformationContext } from "@/context/ExtractedInformationProvider";
+import OrderLineCard from "./OrderLineCard";
 
 function SubmissionForm() {
-  const form = useForm<z.infer<typeof generalInformationSchema>>({
-    resolver: zodResolver(generalInformationSchema),
+  const { extractedInformation } = useContext(ExtractedInformationContext);
+  const form = useForm<z.infer<typeof ExtractedInformationSchema>>({
+    resolver: zodResolver(ExtractedInformationSchema),
     defaultValues: {
-      requestorName: "",
-      // title: "",
-      // vendorName: "",
-      // vatID: "",
-      // commodityGroup: "",
-      // department: "",
+      requestorName: extractedInformation.requestorName,
+      title: extractedInformation.title,
+      vendorName: extractedInformation.vendorName,
+      vatID: extractedInformation.vatID,
+      commodityGroup: extractedInformation.commodityGroup,
+      department: extractedInformation.department,
+      totalCost: extractedInformation.totalCost,
     },
   });
 
-  function onSubmit(values: z.infer<typeof generalInformationSchema>) {
+  useEffect(() => {
+    form.reset(extractedInformation);
+  }, [extractedInformation]);
+
+  function onSubmit(values: z.infer<typeof ExtractedInformationSchema>) {
     console.log(values);
-    submitForm(values);
   }
-
-  const { mutate: submitForm, isPending } = useMutation({
-    mutationFn: async (message: any) => {
-      const response = await fetch("/api/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-      });
-
-      if (!response.ok) {
-        throw new Error();
-      }
-
-      return response.body;
-    },
-  });
 
   return (
     <div>
@@ -81,7 +59,7 @@ function SubmissionForm() {
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
@@ -140,7 +118,26 @@ function SubmissionForm() {
                 </FormControl>
               </FormItem>
             )}
-          /> */}
+          />
+          <h1 className="pb-4 text-yellow-500 font-medium">Order Line</h1>
+          <Separator />
+          {extractedInformation.orderLines.map((_, index) => (
+            <OrderLineCard key={index} form={form} index={index} />
+          ))}
+          <h1 className="pb-4 text-yellow-500 font-medium">Total Cost</h1>
+          <Separator />
+          <FormField
+            control={form.control}
+            name="totalCost"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Total Cost</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <Button type="submit">Submit</Button>
         </form>
       </Form>

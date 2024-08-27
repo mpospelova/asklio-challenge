@@ -1,5 +1,5 @@
-import React from "react";
 import SubmissionForm from "./SubmissionForm";
+import FileUploaderTile from "./FileUploaderTile";
 
 function RequestSubmission() {
   return (
@@ -7,6 +7,7 @@ function RequestSubmission() {
       <div className="w-full max-w-4xl px-4">
         <h1 className="text-lg text-zinc-800 pb-2">Submit a new Request</h1>
         <div className="bg-white rounded p-2">
+          <FileUploaderTile />
           <SubmissionForm />
         </div>
       </div>
