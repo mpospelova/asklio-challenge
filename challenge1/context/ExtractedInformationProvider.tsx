@@ -4,6 +4,7 @@ import { ExtractedInformation } from "@/lib/validators/ExtractedInformation";
 export const ExtractedInformationContext = createContext<{
   extractedInformation: ExtractedInformation;
   addExtractedInformation: (information: ExtractedInformation) => void;
+  emptyExtractedInformation: () => void;
 }>({
   extractedInformation: {
     requestorName: "",
@@ -16,6 +17,7 @@ export const ExtractedInformationContext = createContext<{
     totalCost: "",
   },
   addExtractedInformation: () => {},
+  emptyExtractedInformation: () => {},
 });
 
 export function ExtractedInformationProvider({
@@ -39,11 +41,25 @@ export function ExtractedInformationProvider({
     setExtractedInformation(information);
   };
 
+  const emptyExtractedInformation = () => {
+    setExtractedInformation({
+      requestorName: "",
+      title: "",
+      vendorName: "",
+      vatID: "",
+      commodityGroup: "",
+      department: "",
+      orderLines: [],
+      totalCost: "",
+    });
+  };
+
   return (
     <ExtractedInformationContext.Provider
       value={{
         extractedInformation,
         addExtractedInformation,
+        emptyExtractedInformation,
       }}
     >
       {children}

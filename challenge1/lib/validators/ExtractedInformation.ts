@@ -1,21 +1,21 @@
 import { z } from "zod";
 
 const orderLineSchema = z.object({
-  positionDescription: z.string().min(1),
+  positionDescription: z.string(),
   unitPrice: z.string(),
   amount: z.string(),
-  unit: z.string().min(1),
+  unit: z.string(),
   totalPrice: z.string(),
 });
 
 export const ExtractedInformationSchema = z.object({
-  requestorName: z.string().min(1).max(50),
-  title: z.string().min(1).max(200),
-  vendorName: z.string().min(1).max(50),
-  vatID: z.string().min(1).max(50),
-  commodityGroup: z.string().min(1).max(50),
-  department: z.string().min(1).max(50),
-  totalCost: z.string().min(1).max(50),
+  requestorName: z.string(),
+  title: z.string(),
+  vendorName: z.string(),
+  vatID: z.string(),
+  commodityGroup: z.string(),
+  department: z.string(),
+  totalCost: z.string(),
   orderLines: z.array(orderLineSchema),
 });
 

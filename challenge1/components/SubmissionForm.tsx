@@ -5,6 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { nanoid } from "nanoid";
 import {
   Form,
   FormControl,
@@ -17,9 +18,15 @@ import { useForm } from "react-hook-form";
 import { ExtractedInformationSchema } from "@/lib/validators/ExtractedInformation";
 import { ExtractedInformationContext } from "@/context/ExtractedInformationProvider";
 import OrderLineCard from "./OrderLineCard";
+import { ProcurementRequestsContext } from "@/context/RequestsProvider";
+import { ProcurementRequest } from "@/lib/validators/ProcurementRequest";
+import { useRouter } from "next/navigation";
 
 function SubmissionForm() {
   const { extractedInformation } = useContext(ExtractedInformationContext);
+  const { addRequest } = useContext(ProcurementRequestsContext);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof ExtractedInformationSchema>>({
     resolver: zodResolver(ExtractedInformationSchema),
     defaultValues: {
@@ -38,7 +45,15 @@ function SubmissionForm() {
   }, [extractedInformation]);
 
   function onSubmit(values: z.infer<typeof ExtractedInformationSchema>) {
-    console.log(values);
+    const procurementRequest: ProcurementRequest = {
+      extractedInformation: values,
+      state: "Open",
+      id: nanoid(),
+      createdAt: new Date(),
+    };
+
+    addRequest(procurementRequest);
+    router.back();
   }
 
   return (
@@ -138,7 +153,9 @@ function SubmissionForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" className="bg-amber-500">
+            Submit
+          </Button>
         </form>
       </Form>
     </div>

@@ -7,9 +7,7 @@ import { ExtractedInformationContext } from "@/context/ExtractedInformationProvi
 const FileUploaderTile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
-  const { extractedInformation, addExtractedInformation } = useContext(
-    ExtractedInformationContext
-  );
+  const { addExtractedInformation } = useContext(ExtractedInformationContext);
 
   const handleFileChange = (event: any) => {
     setSelectedFile(event.target.files[0]);

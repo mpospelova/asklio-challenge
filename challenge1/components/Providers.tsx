@@ -1,6 +1,7 @@
 "use client";
 
 import { ExtractedInformationProvider } from "@/context/ExtractedInformationProvider";
+import { ProcurementRequestsProvider } from "@/context/RequestsProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FC, ReactNode } from "react";
 
@@ -13,7 +14,9 @@ const Providers: FC<ProvidersProps> = ({ children }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ExtractedInformationProvider>{children}</ExtractedInformationProvider>
+      <ProcurementRequestsProvider>
+        <ExtractedInformationProvider>{children}</ExtractedInformationProvider>
+      </ProcurementRequestsProvider>
     </QueryClientProvider>
   );
 };
