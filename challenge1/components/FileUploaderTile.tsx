@@ -14,7 +14,7 @@ const FileUploaderTile = () => {
   };
 
   const handleUpload = async () => {
-    setUploadStatus("");
+    setUploadStatus("Uploading...");
     if (!selectedFile) {
       setUploadStatus("Please select a file first.");
       return;

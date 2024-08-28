@@ -16,36 +16,41 @@ interface CommodiyGroupSelectProps {
 
 const CommodiyGroupSelect: React.FC<CommodiyGroupSelectProps> = ({ form }) => {
   return (
-    <FormField
-      control={form.control}
-      name="commodityGroup"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Commodity Group</FormLabel>
-          <FormControl>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder={field.value} />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(commodityGroupsDictionray).map(
-                  ([category, commodityGroups]) => (
-                    <SelectGroup key={category}>
-                      <SelectLabel>{category}</SelectLabel>
-                      {commodityGroups.map((commodityGroup) => (
-                        <SelectItem key={commodityGroup} value={commodityGroup}>
-                          {commodityGroup}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  )
-                )}
-              </SelectContent>
-            </Select>
-          </FormControl>
-        </FormItem>
-      )}
-    />
+    <div>
+      <FormField
+        control={form.control}
+        name="commodityGroup"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Commodity Group</FormLabel>
+            <FormControl>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder={field.value} />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(commodityGroupsDictionray).map(
+                    ([category, commodityGroups]) => (
+                      <SelectGroup key={category}>
+                        <SelectLabel>{category}</SelectLabel>
+                        {commodityGroups.map((commodityGroup) => (
+                          <SelectItem
+                            key={commodityGroup}
+                            value={commodityGroup}
+                          >
+                            {commodityGroup}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
+            </FormControl>
+          </FormItem>
+        )}
+      />
+    </div>
   );
 };
 

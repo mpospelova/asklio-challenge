@@ -1,6 +1,7 @@
 import React, { ReactNode, createContext, useState } from "react";
 import { ProcurementRequest } from "@/lib/validators/ProcurementRequest";
 import { ExtractedInformation } from "@/lib/validators/ExtractedInformation";
+import { toast } from "react-hot-toast";
 
 export const ProcurementRequestsContext = createContext<{
   requests: ProcurementRequest[];
@@ -52,6 +53,13 @@ export function ProcurementRequestsProvider({
     id: string
   ) => {
     const previous = requests.filter((request) => request.id === id)[0];
+
+    if (!previous) {
+      toast.error(
+        "The procurement request doesn't exist, and cannot be updated. Please navigate back to the Overview page and try again."
+      );
+    }
+
     const newRequest: ProcurementRequest = {
       extractedInformation: newInformation,
       createdAt: previous.createdAt,

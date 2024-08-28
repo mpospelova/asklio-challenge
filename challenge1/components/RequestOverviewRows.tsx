@@ -23,7 +23,7 @@ function RequestOverviewRows() {
 
   return (
     <TableBody>
-      {requests.map((request, index) => (
+      {requests.map((request, _) => (
         <TableRow>
           <TableCell className="font-medium">
             {request.extractedInformation.title}

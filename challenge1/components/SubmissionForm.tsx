@@ -138,12 +138,12 @@ const SubmissionForm: FC<SubmissionFormProps> = ({ action, id }) => {
               </FormItem>
             )}
           />
-          <h1 className="pb-4 text-yellow-500 font-medium">Order Line</h1>
+          <h1 className="text-yellow-500 font-medium">Order Line</h1>
           <Separator />
           {extractedInformation.orderLines.map((_, index) => (
             <OrderLineCard key={index} form={form} index={index} />
           ))}
-          <h1 className="pb-4 text-yellow-500 font-medium">Total Cost</h1>
+          <h1 className="text-yellow-500 font-medium">Total Cost</h1>
           <Separator />
           <FormField
             control={form.control}

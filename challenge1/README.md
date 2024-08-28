@@ -19,3 +19,5 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Improvements
 
 1. PostgreSQL database instead of in-memory context management
+2. Improve Prompt for better results
+3. UTF-8 encoding of PDF file - how to deal with German Umlaute?
