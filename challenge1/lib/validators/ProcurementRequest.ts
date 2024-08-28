@@ -6,6 +6,7 @@ const ProcurementRequestSchema = z.object({
   state: z.string(),
   id: z.string(),
   createdAt: z.date(),
+  modifiedAt: z.date(),
 });
 
 export const ProcurementRequestSchemaArraySchema = z.array(

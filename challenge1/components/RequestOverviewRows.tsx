@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ExtractedInformationContext } from "@/context/ExtractedInformationProvider";
-import { DeleteIcon, Edit2Icon, Trash2Icon, TrashIcon } from "lucide-react";
+import { Edit2Icon, Trash2Icon } from "lucide-react";
 
 function RequestOverviewRows() {
   const { requests, changeState, deleteRequest } = useContext(
@@ -65,7 +65,7 @@ function RequestOverviewRows() {
                 addExtractedInformation(request.extractedInformation);
               }}
             >
-              <Link href="/form">
+              <Link href={`/form?action=edit&id=${request.id}`}>
                 <Edit2Icon className="w-4" />
               </Link>
             </Button>

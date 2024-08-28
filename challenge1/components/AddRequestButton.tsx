@@ -13,7 +13,7 @@ function AddRequestButton() {
       className="bg-amber-500"
       onClick={() => emptyExtractedInformation()}
     >
-      <Link href="/form">Add Request</Link>
+      <Link href="/form?action=submit">Add Request</Link>
     </Button>
   );
 }

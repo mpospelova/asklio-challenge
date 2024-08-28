@@ -23,9 +23,16 @@ import { ProcurementRequest } from "@/lib/validators/ProcurementRequest";
 import { useRouter } from "next/navigation";
 import CommodiyGroupSelect from "./CommodiyGroupSelect";
 
-function SubmissionForm() {
+interface SubmissionFormProps {
+  action: string;
+  id?: string;
+}
+
+const SubmissionForm: FC<SubmissionFormProps> = ({ action, id }) => {
   const { extractedInformation } = useContext(ExtractedInformationContext);
-  const { addRequest } = useContext(ProcurementRequestsContext);
+  const { addRequest, updateInformation } = useContext(
+    ProcurementRequestsContext
+  );
   const router = useRouter();
 
   const form = useForm<z.infer<typeof ExtractedInformationSchema>>({
@@ -46,14 +53,21 @@ function SubmissionForm() {
   }, [extractedInformation]);
 
   function onSubmit(values: z.infer<typeof ExtractedInformationSchema>) {
-    const procurementRequest: ProcurementRequest = {
-      extractedInformation: values,
-      state: "Open",
-      id: nanoid(),
-      createdAt: new Date(),
-    };
+    if (action === "submit") {
+      const today = new Date();
+      const procurementRequest: ProcurementRequest = {
+        extractedInformation: values,
+        state: "Open",
+        id: nanoid(),
+        createdAt: today,
+        modifiedAt: today,
+      };
 
-    addRequest(procurementRequest);
+      addRequest(procurementRequest);
+    } else if (action === "edit") {
+      updateInformation(values, id!);
+    }
+
     router.back();
   }
 
@@ -150,6 +164,6 @@ function SubmissionForm() {
       </Form>
     </div>
   );
-}
+};
 
 export default SubmissionForm;
