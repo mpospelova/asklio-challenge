@@ -18,12 +18,7 @@ export async function POST(req: Request) {
   return new Response(
     JSON.stringify({
       extractedInformation,
-    }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
+    })
   );
 }
 
@@ -68,18 +63,18 @@ async function createVectorStore(file: Blob) {
 
 async function callStructuredOutputParser(vectorstore: any) {
   const model = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo",
+    modelName: "gpt-4o",
     temperature: 0,
   });
 
   const retriever = vectorstore.asRetriever();
   const systemTemplate = [
-    `Du bist ein Assisstent und hilfst mit der Extrahierung von Information aus einem PDF-Dokumenten.`,
-    `Verwende die folgenden Teile des Kontexts, um die noetige Information zu extrahieren.`,
-    `Wenn Du die Antwort nicht weisst, dann gibst du ein N/A oder ein leeres Array zurueck.`,
-    `Formatiere die Antwort laut dieser Anleitung: {formatting_instructions}`,
+    `Du bist ein Assisstent und hilfst mit der Extrahierung von Information aus einem PDF-Dokument.`,
+    `Verwende den folgenden Kontext, um die noetige Information zu extrahieren.`,
+    `Wenn Du die Antwort nicht weisst, dann gibst du ein N/A zurueck.`,
     `\n\n`,
-    `{context}`,
+    `Kontext: {context}`,
+    `Formatierung der Antwort: {formatting_instructions}`,
   ].join("");
 
   const prompt = ChatPromptTemplate.fromMessages([
@@ -99,41 +94,26 @@ async function callStructuredOutputParser(vectorstore: any) {
 
   const outputParser = StructuredOutputParser.fromZodSchema(
     z.object({
-      requestorName: z
-        .string()
-        .describe("Vollstaendiger Name der Person, die die Anfrage stellt."),
-      title: z
-        .array(z.string())
-        .describe(
-          "Kurzer Name oder Beschreibung des angeforderten Produkts/Dienstes."
-        ),
-      vendorName: z
-        .string()
-        .describe(
-          "Name des Unternehmens oder der Person, die den Produkt/Dienstleistungen bereitstellt."
-        ),
-      vatID: z
-        .string()
-        .describe(
-          "Umsatzsteuer-Identifikationsnummer des Anbieters. Auch als UID bezeichnet."
-        ),
-      commodityGroup: z
-        .string()
-        .describe(
-          "Die Kategorie oder Gruppe, zu der die angeforderten Artikel/Dienstleistungen gehoeren."
-        ),
-      department: z.string().describe("Die Abteilung des Anforderers."),
-      totalCost: z.string().describe("Geschaetzte Gesamtkosten der Anfrage."),
+      requestorName: z.string().describe("1"),
+      title: z.array(z.string()).describe("2"),
+      vendorName: z.string().describe("3"),
+      vatID: z.string().describe("4"),
+      department: z.string().describe("5"),
+      totalCost: z.string().describe("6"),
+      commodityGroup: z.string().describe("8"),
       orderLines: z
         .array(
           z.object({
             positionDescription: z
               .string()
               .describe("Beschreibung des Artikels/der Dienstleistung."),
-            unitPrice: z
+            amount: z
               .string()
               .describe("Die Anzahl oder Menge der bestellten Einheiten."),
-            amount: z
+            unitPrice: z
+              .string()
+              .describe("Der Preis der pro Einheit/Dienstleistung/Artikel"),
+            unit: z
               .string()
               .describe("Die Masseinheit oder Menge (z.B. Lizenzen)."),
             totalPrice: z
@@ -149,18 +129,74 @@ async function callStructuredOutputParser(vectorstore: any) {
 
   const result = await ragChain.invoke({
     formatting_instructions: outputParser.getFormatInstructions(),
-    input: `Was ist der vollstaendige Name der Person, die die Anfrage stellt?
-      Was ist die kurze Beschreibung des angeforderten Produkts/Dienstes?
-      Was ist der Name des Unternehmens oder der Person, die den Produkt/Dienstleistungen bereitstellt?
-      Was ist die Umsatzsteuer-Identifikationsnummer des Anbieters?
-      Was ist die Kategorie oder Gruppe, zu der die angeforderten Artikel/Dienstleistungen gehoeren?
-      Was ist Die Abteilung des Anforderers? Was ist der Gesamtpreis fuer diese Position (Einzelpreis x Menge)?
-      Was sind die Geschaetzte Gesamtkosten der Anfrage?
-      Was ist die Liste der Produkte/Positionen aus dem Angebot? Bitte gebe eine Liste der Produkte zurueck, wo jedes Objekt in der Liste die folgende Information enthaelt (wenn du keine Produkte findest, gebe bitte eine leere Liste zurueck):
-      Was ist die Beschreibung des Artikels/der Dienstleistung?
-      Was ist die Die Anzahl oder Menge der bestellten Einheiten?
-      Was ist der Gesamtpreis fuer diese Position (Einzelpreis x Menge)? 
-      `,
+    input: `Bitte extrahiere die folgenden Informationen aus dem Dokument:
+  1. Vollstaendiger Name der Person, die die Anfrage stellt (Diese Person arbeitet fuer Lio Technologies GmbH. Wenn der Name nicht existiert, dann bitte antworte mit Lio Technologies GmbH als) vollstaendiger Name der Person, die die Anfrage stellt.
+  2. Kurze Beschreibung des angeforderten Produkts/Dienstes.
+  3. Name des Unternehmens oder der Person, die das Produkt/Dienstleistung bereitstellt (Die zweite Firma erwaehnt im Dokument).
+  4. Umsatzsteuer-Identifikationsnummer des Anbieters (kann auch als UID, VAT ID, oder USt-IdNr bezeichnet werden).
+  5. Abteilung des Anforderers.
+  6. Gesamte geschaetzte Kosten der Anfrage (kann auch als Endsumme, Gesamtkosten, etc. bezeichnet werden).
+  7. Liste der Produkte/Positionen/Leistungen aus dem Angebot, und jedes Produkt hat die folgenden Informationen:
+     - Beschreibung oder Bezeichnung der bestellten Einheiten.
+     - Anzahl oder Menge der bestellten Einheitenen
+     - Gesamtpreis der Einheiten (kann auch als Gesamt oder Einzelpreis x Menge oder aehnliches bezeichnet werden).
+     - Die Masseinheit oder Menge der bestellten Einheiten.
+  
+  8. Basierend auf der Liste der Produkte/Positionen/Leistungen, die du extrahierst, bitte bestimme die Kategorie und die Commodity Group aus der folgenden Tabelle:
+  
+  | ID  | Category                | Commodity Group                       |
+  | --- | ----------------------- | ------------------------------------- |
+  | 001 | General Services        | Accommodation Rentals                 |
+  | 002 | General Services        | Membership Fees                       |
+  | 003 | General Services        | Workplace Safety                      |
+  | 004 | General Services        | Consulting                            |
+  | 005 | General Services        | Financial Services                    |
+  | 006 | General Services        | Fleet Management                      |
+  | 007 | General Services        | Recruitment Services                  |
+  | 008 | General Services        | Professional Development              |
+  | 009 | General Services        | Miscellaneous Services                |
+  | 010 | General Services        | Insurance                             |
+  | 011 | Facility Management     | Electrical Engineering                |
+  | 012 | Facility Management     | Facility Management Services          |
+  | 013 | Facility Management     | Security                              |
+  | 014 | Facility Management     | Renovations                           |
+  | 015 | Facility Management     | Office Equipment                      |
+  | 016 | Facility Management     | Energy Management                     |
+  | 017 | Facility Management     | Maintenance                           |
+  | 018 | Facility Management     | Cafeteria and Kitchenettes            |
+  | 019 | Facility Management     | Cleaning                              |
+  | 020 | Publishing Production   | Audio and Visual Production           |
+  | 021 | Publishing Production   | Books/Videos/CDs                      |
+  | 022 | Publishing Production   | Printing Costs                        |
+  | 023 | Publishing Production   | Software Development for Publishing   |
+  | 024 | Publishing Production   | Material Costs                        |
+  | 025 | Publishing Production   | Shipping for Production               |
+  | 026 | Publishing Production   | Digital Product Development           |
+  | 027 | Publishing Production   | Pre-production                        |
+  | 028 | Publishing Production   | Post-production Costs                 |
+  | 029 | Information Technology  | Hardware                              |
+  | 030 | Information Technology  | IT Services                           |
+  | 031 | Information Technology  | Software                              |
+  | 032 | Logistics               | Courier, Express, and Postal Services |
+  | 033 | Logistics               | Warehousing and Material Handling     |
+  | 034 | Logistics               | Transportation Logistics              |
+  | 035 | Logistics               | Delivery Services                     |
+  | 036 | Marketing & Advertising | Advertising                           |
+  | 037 | Marketing & Advertising | Outdoor Advertising                   |
+  | 038 | Marketing & Advertising | Marketing Agencies                    |
+  | 039 | Marketing & Advertising | Direct Mail                           |
+  | 040 | Marketing & Advertising | Customer Communication                |
+  | 041 | Marketing & Advertising | Online Marketing                      |
+  | 042 | Marketing & Advertising | Events                                |
+  | 043 | Marketing & Advertising | Promotional Materials                 |
+  | 044 | Production              | Warehouse and Operational Equipment   |
+  | 045 | Production              | Production Machinery                  |
+  | 046 | Production              | Spare Parts                           |
+  | 047 | Production              | Internal Transportation               |
+  | 048 | Production              | Production Materials                  |
+  | 049 | Production              | Consumables                           |
+  | 050 | Production              | Maintenance and Repairs               |
+  `,
   });
 
   const parsedResult = outputParser.parse(result.answer);
