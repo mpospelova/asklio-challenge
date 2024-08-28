@@ -19,6 +19,7 @@ function RequestOverview() {
             <TableHead>Requestor Name</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created At</TableHead>
+            <TableHead>Modified At</TableHead>
             <TableHead>Edit</TableHead>
             <TableHead>Delete</TableHead>
           </TableRow>

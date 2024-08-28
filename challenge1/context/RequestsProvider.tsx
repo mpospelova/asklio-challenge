@@ -34,7 +34,7 @@ export function ProcurementRequestsProvider({
           return {
             ...request,
             state: newState,
-            modifiedAt: new Date(),
+            modifiedAt: new Date().toLocaleString(),
           };
         } else {
           return request;
@@ -55,7 +55,7 @@ export function ProcurementRequestsProvider({
     const newRequest: ProcurementRequest = {
       extractedInformation: newInformation,
       createdAt: previous.createdAt,
-      modifiedAt: new Date(),
+      modifiedAt: new Date().toLocaleString(),
       id: id,
       state: previous.state,
     };

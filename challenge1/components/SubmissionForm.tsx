@@ -59,8 +59,8 @@ const SubmissionForm: FC<SubmissionFormProps> = ({ action, id }) => {
         extractedInformation: values,
         state: "Open",
         id: nanoid(),
-        createdAt: today,
-        modifiedAt: today,
+        createdAt: today.toLocaleString(),
+        modifiedAt: today.toLocaleString(),
       };
 
       addRequest(procurementRequest);

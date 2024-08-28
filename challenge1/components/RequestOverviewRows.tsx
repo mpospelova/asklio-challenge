@@ -51,7 +51,11 @@ function RequestOverviewRows() {
           </TableCell>
 
           <TableCell className="font-medium">
-            {request.createdAt.toDateString()}
+            {request.createdAt.toLocaleLowerCase()}
+          </TableCell>
+
+          <TableCell className="font-medium">
+            {request.modifiedAt.toLocaleLowerCase()}
           </TableCell>
 
           <TableCell>
