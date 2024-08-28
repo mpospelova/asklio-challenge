@@ -1,12 +1,19 @@
 import RequestSubmission from "@/components/RequestSubmission";
-import React from "react";
+import React, { FC } from "react";
 
-function Form() {
+interface FormProps {
+  searchParams: {
+    action: string;
+    id?: string;
+  };
+}
+
+const Form: FC<FormProps> = ({ searchParams: { action, id } }) => {
   return (
     <div>
-      <RequestSubmission />
+      <RequestSubmission action={action} id={id} />
     </div>
   );
-}
+};
 
 export default Form;

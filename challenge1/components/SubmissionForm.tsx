@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect } from "react";
+import React, { FC, useContext, useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import OrderLineCard from "./OrderLineCard";
 import { ProcurementRequestsContext } from "@/context/RequestsProvider";
 import { ProcurementRequest } from "@/lib/validators/ProcurementRequest";
 import { useRouter } from "next/navigation";
+import CommodiyGroupSelect from "./CommodiyGroupSelect";
 
 function SubmissionForm() {
   const { extractedInformation } = useContext(ExtractedInformationContext);
@@ -110,18 +111,7 @@ function SubmissionForm() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="commodityGroup"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Commodity Group</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          <CommodiyGroupSelect form={form} />
           <FormField
             control={form.control}
             name="department"
