@@ -77,21 +77,21 @@ def matchOrderLinesWithHeaders() -> List[Optional[Dict[str, Any]]]:
 
     matches = backtracking(set([]), [], orderHeaders, orderLines, set([]))
 
-    # result = []
-    # for match in matches:
-    #     endResultMatch = match
-    #     orderLineIndexes = endResultMatch["order_lines"]
+    result = []
+    for match in matches:
+        endResultMatch = match
+        orderLineIndices = endResultMatch["order_lines"]
 
-    #     newOrderLines = []
-    #     for orderIndex in orderLineIndexes:
-    #         newOrderLines.append(orderLines[orderIndex])
+        newOrderLines = []
+        for orderIndex in orderLineIndices:
+            newOrderLines.append(orderLines[orderIndex])
         
-    #     endResultMatch["order_lines"] = newOrderLines
+        endResultMatch["order_lines"] = newOrderLines
 
-    #     result.append(endResultMatch)
+        result.append(endResultMatch)
         
 
     
-    return matches
+    return result
 
 print(matchOrderLinesWithHeaders())
